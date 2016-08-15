@@ -8,35 +8,35 @@ The Service-Component header is compatible with the standard OSGi header syntax.
 
 The syntax for these component definitions is:
 
-  component ::= <name> ( ';' parameter ) * 
-  parameter ::= provide | reference | multiple | optional
-              | reference | properties | factory | servicefactory
-              | immediate | enabled | implementation 
-              | activate | deactivate | modified | configuration-policy
-              | version | designate
+    component ::= <name> ( ';' parameter ) * 
+    parameter ::= provide | reference | multiple | optional
+                | reference | properties | factory | servicefactory
+                | immediate | enabled | implementation 
+                | activate | deactivate | modified | configuration-policy
+                | version | designate
 
-  reference ::= <name> '=' <interface-class> 
-                 ( '(' <target-filter> ')')? cardinality?
-  cardinality ::= '?' | '*' | '+' | '~'
-  provide  ::= 'provide:=' LIST 
-  multiple  ::= 'multiple:=' LIST 
-  optional  ::= 'optional:=' LIST 
-  dynamic   ::= 'dynamic:=' LIST
-  designate  ::= ( 'designate' | 'designateFactory' ) CLASS
-  factory   ::= 'factory:=' true | false
-  servicefactory := 'servicefactory:=' true | false
-  immediate ::= 'immediate:=' true | false
-  enabled   ::= 'enabled:=' true | false
-  configuration-policy ::= "configuration-policy:=' 
-       ( 'optional' | 'require' | 'ignore' )
-  activate  ::= 'activate:=' METHOD
-  modified  ::= 'modified:=' METHOD
-  deactivate::= 'deactivate:=' METHOD
-  implementation::= 'implementation:=' <implementation-class>
-  properties::= 'properties:=' key '=' value  [=\=]
-                ( ',' key '=' value ) *
-  key       ::= NAME (( '@' | ':' ) type )?
-  value     ::= value ( '|' value )*
+    reference ::= <name> '=' <interface-class> 
+                   ( '(' <target-filter> ')')? cardinality?
+    cardinality ::= '?' | '*' | '+' | '~'
+    provide  ::= 'provide:=' LIST 
+    multiple  ::= 'multiple:=' LIST 
+    optional  ::= 'optional:=' LIST 
+    dynamic   ::= 'dynamic:=' LIST
+    designate  ::= ( 'designate' | 'designateFactory' ) CLASS
+    factory   ::= 'factory:=' true | false
+    servicefactory := 'servicefactory:=' true | false
+    immediate ::= 'immediate:=' true | false
+    enabled   ::= 'enabled:=' true | false
+    configuration-policy ::= "configuration-policy:=' 
+         ( 'optional' | 'require' | 'ignore' )
+    activate  ::= 'activate:=' METHOD
+    modified  ::= 'modified:=' METHOD
+    deactivate::= 'deactivate:=' METHOD
+    implementation::= 'implementation:=' <implementation-class>
+    properties::= 'properties:=' key '=' value  [=\=]
+                  ( ',' key '=' value ) *
+    key       ::= NAME (( '@' | ':' ) type )?
+    value     ::= value ( '|' value )*
 
 If the name of the component maps to a resource, or ends in XML, or there are attributes set, then that clause is copied to the output Service-Component header.
 
@@ -48,19 +48,20 @@ Annotations are only recognized on the component class, super classes are not in
 
 The supported annotations in the `aQute.bnd.annotations.component` package are:
 
-||!Component||
+|Component|
+|---------|
 Annotated the class, indicates this class is required to be a component. It has the following properties:
 
-||  provide||Class[]||Service interfaces, the default is all directly implemented interfaces||
-||name     ||String||Name of the component||
-||factory  ||Boolean||Factory component||
-||servicefactory||Boolean||Service Factory||
-||immediate||Boolean||Immediate activation||
-||designate||CLASS||Designate a class as a [[MetaType]] interface used for configurations for unitary configurations, see [[#metatype]]. This changes the default of the configurationPolicy to `require`.||
-||designateFactory||CLASS||Designate a class as a [[MetaType]] interface used for configurations for factory configurations, see [[#metatype]]. This changes the default of the configurationPolicy to `require`.||
-||configurationPolicy||OPTIONAL, REQUIRE, IGNORE||Configuration Policy||
-||enabled||Boolean||Enabled component||
-||properties||String[]||Properties specified as an array of `key=value`. The property type can be specified in the key as `name:Integer`. The value can contain multiple values, the parts must then be separated by a vertical bar ('|') or a line feed (\n), for example `properties = {"primes:Integer==1|2|3|5|7|11"`}.|| 
+| provide | Class[] | Service interfaces, the default is all directly implemented interfaces |
+| name     | String | Name of the component |
+| factory  | Boolean | Factory component |
+| servicefactory | Boolean | Service Factory |
+| immediate | Boolean |Immediate activation|
+| designate | CLASS |Designate a class as a [[MetaType]] interface used for configurations for unitary configurations, see [[#metatype]]. This changes the default of the configurationPolicy to `require`.|
+|designateFactory|CLASS|Designate a class as a [[MetaType]] interface used for configurations for factory configurations, see [[#metatype]]. This changes the default of the configurationPolicy to `require`.|
+|configurationPolicy|OPTIONAL, REQUIRE, IGNORE|Configuration Policy|
+|enabled|Boolean|Enabled component|
+|properties|String[]|Properties specified as an array of `key=value`. The property type can be specified in the key as `name:Integer`. The value can contain multiple values, the parts must then be separated by a vertical bar ('|') or a line feed (\n), for example `properties = {"primes:Integer==1|2|3|5|7|11"`}.| 
 
 ||!Reference||
 On a method. Indicates this method is the activate method. It has the following attributes
@@ -94,26 +95,26 @@ The life cycle methods. These annotations have no properties.
   
 Assume the JAR contains the following class:
 
-  package com.acme;
-  import org.osgi.service.event.*;
-  import org.osgi.service.log.*;
-  import aQute.bnd.annotation.component.*;
-
-  @Component
-  public class AnnotatedComponent implements EventHandler {
-    LogService log;
-
-    @Reference
-    void setLog(LogService log) { this.log=log; }
-
-    public void handleEvent(Event event) {
-      log.log(LogService.LOG_INFO, event.getTopic());
+    package com.acme;
+    import org.osgi.service.event.*;
+    import org.osgi.service.log.*;
+    import aQute.bnd.annotation.component.*;
+    
+    @Component
+    public class AnnotatedComponent implements EventHandler {
+      LogService log;
+    
+      @Reference
+      void setLog(LogService log) { this.log=log; }
+    
+      public void handleEvent(Event event) {
+        log.log(LogService.LOG_INFO, event.getTopic());
+      }
     }
-  }
 
 The only thing necessary to register the Declarative Service component is to add the following Service-Component header:
 
-  Service-Component: com.acme.*
+    Service-Component: com.acme.*
 
 This header will look for annotations in all com.acme sub-packages for an annotated component. The resulting XML will look like:
 
@@ -210,19 +211,19 @@ In this model, configurations are declared in an interface. For example, the fol
 
 To create a component that can work with this config, we need to designate that interface as the configuration interface for a component.
 
-  @Component(designate=Config.class)
-  public class BasicComponent {
-      Config config;
-
-      @Activate void activate(Map<String,Object> props) {
-         config = Configurable.createConfig(props);
-         System.out.println("Hi " + config.message());
-      }
-
-      @Deactivate void deactivate() {
-         System.out.println("Bye " + config.message());
-      }
-  }
+    @Component(designate=Config.class)
+    public class BasicComponent {
+        Config config;
+      
+        @Activate void activate(Map<String,Object> props) {
+           config = Configurable.createConfig(props);
+           System.out.println("Hi " + config.message());
+        }
+      
+        @Deactivate void deactivate() {
+           System.out.println("Bye " + config.message());
+        }
+    }
 
 This is an immediate component because it does not implement a service interface. It also requires a configuration because we have not specified this explicitly. When you use designate (or designateFactory) the default becomes require. This means that your component will only be created when there is actually configuration for it set.
 
@@ -235,11 +236,11 @@ You can fill in the message in the ''Message'' field. If you save the editor, yo
 
 If you change the message, you will see that the component is first deactivated and then reactivated again. This is the only possibility for the SCR because the component has not implemented a modified method. Adding the following method will change this, now changes to the configuration are signaled to the component and the component can continue to work. This is more complicated then recycling the component but it can create a more optimized system.
 
-  @Modified
-  void modified( Map<String,Object> props) {
-    // reuse activate method
-    activate(props);
-  }
+    @Modified
+    void modified( Map<String,Object> props) {
+      // reuse activate method
+      activate(props);
+    }
 
 It is also possible to take advantage of the configuration factories. In this model 
 
